@@ -89,8 +89,16 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
       margin-bottom: 6px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
     }
 
     h1 {
@@ -102,9 +110,9 @@
 
     .theme-toggle-btn {
       flex-shrink: 0;
-      padding: 7px 12px;
+      padding: 6px 11px;
       border-radius: 999px;
-      font-size: 0.85rem;
+      font-size: 0.83rem;
       font-weight: 600;
       border: 1px solid var(--border);
       background: var(--surface-alt);
@@ -112,7 +120,7 @@
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       transition: all 0.2s;
     }
 
@@ -121,10 +129,60 @@
       background: var(--primary-light);
     }
 
+    .theme-toggle-btn.music-on {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
     .subtitle {
       color: var(--muted);
       font-size: 0.92rem;
-      margin-bottom: 18px;
+      margin-bottom: 12px;
+    }
+
+    /* YouTube Music Bar */
+    .yt-music-bar {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 16px;
+      padding: 8px 10px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+    }
+
+    .yt-music-bar input {
+      flex: 1;
+      min-width: 0;
+      padding: 7px 10px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 0.85rem;
+    }
+
+    .yt-music-bar input::placeholder {
+      color: var(--muted);
+    }
+
+    .yt-music-bar button {
+      padding: 7px 12px;
+      font-size: 0.84rem;
+      border-radius: 7px;
+      white-space: nowrap;
+    }
+
+    .yt-hidden-player {
+      position: fixed;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+      bottom: 0;
+      right: 0;
     }
 
     .tabs {
@@ -399,7 +457,7 @@
       display: none !important;
     }
 
-    /* LED Traffic-Light Marquee (Left -> Right) */
+    /* Multi-color LED Marquee (Left -> Right) */
     .credit-marquee {
       margin-top: 22px;
       padding: 10px 0;
@@ -423,7 +481,7 @@
       will-change: transform, left;
       animation:
         marqueeLeftToRight 7.5s linear infinite,
-        trafficLightColor 3.6s ease-in-out infinite;
+        rainbowLedColor 4.5s linear infinite;
     }
 
     @keyframes marqueeLeftToRight {
@@ -437,18 +495,38 @@
       }
     }
 
-    @keyframes trafficLightColor {
-      0%, 28% {
+    @keyframes rainbowLedColor {
+      0% {
         color: #ff3b30;
         text-shadow: 0 0 6px #ff3b30, 0 0 14px rgba(255, 59, 48, 0.85);
       }
-      33%, 61% {
+      14% {
+        color: #ff9500;
+        text-shadow: 0 0 6px #ff9500, 0 0 14px rgba(255, 149, 0, 0.85);
+      }
+      28% {
         color: #ffd60a;
         text-shadow: 0 0 6px #ffd60a, 0 0 14px rgba(255, 214, 10, 0.85);
       }
-      66%, 95% {
+      42% {
         color: #30d158;
         text-shadow: 0 0 6px #30d158, 0 0 14px rgba(48, 209, 88, 0.85);
+      }
+      57% {
+        color: #00e5ff;
+        text-shadow: 0 0 6px #00e5ff, 0 0 14px rgba(0, 229, 255, 0.85);
+      }
+      71% {
+        color: #3b82f6;
+        text-shadow: 0 0 6px #3b82f6, 0 0 14px rgba(59, 130, 246, 0.85);
+      }
+      85% {
+        color: #bf5af2;
+        text-shadow: 0 0 6px #bf5af2, 0 0 14px rgba(191, 90, 242, 0.85);
+      }
+      93% {
+        color: #ff2d55;
+        text-shadow: 0 0 6px #ff2d55, 0 0 14px rgba(255, 45, 85, 0.85);
       }
       100% {
         color: #ff3b30;
@@ -458,12 +536,31 @@
   </style>
 </head>
 <body>
+  <!-- Khung YouTube ẩn chỉ lấy tiếng -->
+  <div class="yt-hidden-player">
+    <div id="ytPlayer"></div>
+  </div>
+
   <div class="container">
     <div class="header-top">
       <h1>Ôn tập Phân loại Nhóm thuốc – Dược lý 2</h1>
-      <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()">🌙 Nền tối</button>
+      <div class="header-actions">
+        <button class="theme-toggle-btn music-on" id="musicToggleBtn" onclick="toggleMusic()" title="Bật / Tắt nhạc">🔊 Bật nhạc</button>
+        <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()">🌙 Nền tối</button>
+      </div>
     </div>
     <div class="subtitle">Chuẩn 159 mục hoạt chất thực tế trong đề cương thi cuối kỳ (Buổi 9 – Buổi 14)</div>
+
+    <!-- Thanh dán link YouTube phát nhạc nền -->
+    <div class="yt-music-bar">
+      <input
+        type="text"
+        id="ytUrlInput"
+        placeholder="Dán link YouTube nhạc nền vào đây (VD: https://youtu.be/...)"
+        onkeydown="if(event.key==='Enter') loadYoutubeFromInput()"
+      />
+      <button class="btn-primary" onclick="loadYoutubeFromInput()">▶ Phát</button>
+    </div>
 
     <div class="tabs">
       <button class="tab-btn active" id="tabQuiz" onclick="switchMode('quiz')">1. Trắc nghiệm ôn tập (159 mục)</button>
@@ -1484,6 +1581,204 @@
     "sub": "Tiểu nhóm 14.2"
   }
 ];
+
+    /* ================= YOUTUBE + FALLBACK MUSIC CONTROLLER ================= */
+    const DEFAULT_YT_ID = "lTRiuFIWV54"; // Nhạc Lofi học bài mặc định
+    let currentYtId = DEFAULT_YT_ID;
+    let ytPlayer = null;
+    let ytReady = false;
+    let userMutedMusic = false;
+    let useSynthFallback = false;
+    let audioCtx = null;
+    let synthTimer = null;
+
+    const musicBtn = document.getElementById("musicToggleBtn");
+    const ytInput = document.getElementById("ytUrlInput");
+
+    function extractYoutubeId(url) {
+      if (!url) return null;
+      const trimmed = url.trim();
+      if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+      const match = trimmed.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|v\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+      return match ? match[1] : null;
+    }
+
+    (function initSavedYt() {
+      try {
+        const savedUrl = localStorage.getItem("duocly2_yt_url");
+        if (savedUrl) {
+          const parsedId = extractYoutubeId(savedUrl);
+          if (parsedId) {
+            currentYtId = parsedId;
+            ytInput.value = savedUrl;
+          }
+        }
+      } catch (e) {}
+    })();
+
+    // Nạp YouTube IFrame API
+    const ytScriptTag = document.createElement("script");
+    ytScriptTag.src = "https://www.youtube.com/iframe_api";
+    ytScriptTag.onerror = () => {
+      useSynthFallback = true;
+      if (!userMutedMusic) startSynthLoop();
+    };
+    document.head.appendChild(ytScriptTag);
+
+    function onYouTubeIframeAPIReady() {
+      ytPlayer = new YT.Player("ytPlayer", {
+        height: "1",
+        width: "1",
+        videoId: currentYtId,
+        playerVars: {
+          autoplay: 1,
+          loop: 1,
+          playlist: currentYtId,
+          controls: 0,
+          disablekb: 1,
+          fs: 0,
+          modestbranding: 1,
+          rel: 0
+        },
+        events: {
+          onReady: (event) => {
+            ytReady = true;
+            event.target.setVolume(45);
+            if (!userMutedMusic) {
+              event.target.playVideo();
+            }
+          },
+          onStateChange: (event) => {
+            // Lặp lại khi hết bài
+            if (event.data === YT.PlayerState.ENDED && !userMutedMusic) {
+              ytPlayer.playVideo();
+            }
+          },
+          onError: () => {
+            // Nếu video bị chủ kênh chặn nhúng hoặc lỗi mạng -> chuyển sang nhạc chill dự phòng
+            useSynthFallback = true;
+            if (!userMutedMusic) startSynthLoop();
+          }
+        }
+      });
+    }
+
+    function loadYoutubeFromInput() {
+      const rawUrl = ytInput.value.trim();
+      const videoId = extractYoutubeId(rawUrl);
+      if (!videoId) {
+        alert("Link YouTube chưa hợp lệ! Bạn hãy dán link dạng https://www.youtube.com/watch?v=... hoặc https://youtu.be/...");
+        return;
+      }
+
+      currentYtId = videoId;
+      userMutedMusic = false;
+      useSynthFallback = false;
+      stopSynthLoop();
+      updateMusicUI(true);
+
+      try {
+        localStorage.setItem("duocly2_yt_url", rawUrl);
+      } catch (e) {}
+
+      if (ytReady && ytPlayer && typeof ytPlayer.loadVideoById === "function") {
+        ytPlayer.loadVideoById({
+          videoId: currentYtId,
+          startSeconds: 0
+        });
+        ytPlayer.playVideo();
+      }
+    }
+
+    function startSynthLoop() {
+      if (synthTimer || userMutedMusic) return;
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        if (!audioCtx) audioCtx = new AudioContextClass();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+
+        const chords = [
+          [261.63, 329.63, 392.00, 493.88],
+          [220.00, 261.63, 329.63, 392.00],
+          [174.61, 220.00, 261.63, 329.63],
+          [196.00, 246.94, 293.66, 329.63]
+        ];
+        let step = 0;
+
+        const playChord = () => {
+          if (userMutedMusic || !audioCtx || audioCtx.state !== "running") return;
+          const now = audioCtx.currentTime;
+          const notes = chords[step % chords.length];
+          notes.forEach(freq => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(freq, now);
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.exponentialRampToValueAtTime(0.025, now + 0.4);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.3);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 2.4);
+          });
+          step++;
+        };
+
+        playChord();
+        synthTimer = setInterval(playChord, 2400);
+      } catch (e) {}
+    }
+
+    function stopSynthLoop() {
+      if (synthTimer) {
+        clearInterval(synthTimer);
+        synthTimer = null;
+      }
+    }
+
+    function updateMusicUI(isOn) {
+      if (!musicBtn) return;
+      musicBtn.innerText = isOn ? "🔊 Bật nhạc" : "🔇 Tắt nhạc";
+      musicBtn.classList.toggle("music-on", isOn);
+    }
+
+    function toggleMusic() {
+      if (!userMutedMusic) {
+        userMutedMusic = true;
+        if (ytReady && ytPlayer && typeof ytPlayer.pauseVideo === "function") {
+          ytPlayer.pauseVideo();
+        }
+        stopSynthLoop();
+        updateMusicUI(false);
+      } else {
+        userMutedMusic = false;
+        updateMusicUI(true);
+        if (useSynthFallback) {
+          startSynthLoop();
+        } else if (ytReady && ytPlayer && typeof ytPlayer.playVideo === "function") {
+          ytPlayer.playVideo();
+        } else {
+          startSynthLoop();
+        }
+      }
+    }
+
+    // Tự động kích hoạt âm thanh ở cú click/chạm đầu tiên nếu trình duyệt chặn autoplay
+    ["click", "touchstart", "keydown"].forEach(evt => {
+      document.addEventListener(evt, function unlockAudio() {
+        if (!userMutedMusic) {
+          if (useSynthFallback) {
+            startSynthLoop();
+          } else if (ytReady && ytPlayer && typeof ytPlayer.playVideo === "function") {
+            ytPlayer.playVideo();
+          }
+        }
+        document.removeEventListener(evt, unlockAudio);
+      }, { once: true });
+    });
+    /* ===================================================================== */
 
     let questionPool = [];
     let currentIndex = 0;
